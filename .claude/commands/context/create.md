@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash, Read, Write, LS
+allowed-tools: Bash, Read, Write, LS, WebSearch, Ref, BraveSearch
 ---
 
 # Create Initial Context
@@ -71,6 +71,18 @@ Gather information in this order:
 - Run: `ls -la` to see root directory structure
 - Read README.md if it exists
 
+#### Real-time Tech Validation (for `tech-context.md`)
+
+To avoid obsolete dependencies, practices, or knowledge, perform live validation before writing `tech-context.md`:
+
+- Use live docs search (authorized tools: WebSearch, Ref, BraveSearch) to verify current stable versions and recommendations for key technologies detected in the repo (language runtime, framework, package manager, database, cloud/hosting, AI models/APIs, linters/formatters, test runners, CI).
+- Prefer authoritative sources: official docs, release notes, RFCs, provider changelogs. Avoid random blogs.
+- Apply recency rule: only cite sources updated within the last 6 months. If not available, include a note: "No recent official update found; using best available reference as of [date]."
+- For AI model providers (e.g., OpenAI), explicitly check the official models page and/or changelog for the current recommended general-purpose model at generation time. Do not hardcode model names; resolve the latest stable/recommended model at runtime.
+- For major frameworks (e.g., Next.js, React, Vite, Tailwind, Supabase, Prisma), confirm the latest stable major/minor version and note any deprecations or migration advisories relevant to the detected versions in the codebase.
+- Record citations inline with each recommendation using markdown links with descriptive anchors (no bare URLs). Include a short "Verified: YYYY-MM-DD" tag next to each item.
+- If offline or live lookups fail, fall back to local package files and clearly mark the section as "Unverified (offline)" with date, and avoid prescriptive upgrade advice.
+
 ### 3. Context File Creation with Frontmatter
 
 Each context file MUST include frontmatter with real datetime:
@@ -92,6 +104,8 @@ Generate the following initial context files:
   - Include: Key directories, file naming patterns, module organization
 - `tech-context.md` - Catalog current dependencies, technologies, and development tools
   - Include: Language version, framework versions, dev dependencies
+  - MUST include a "Verification" field for each technology with: current version, "Verified: YYYY-MM-DD", and a citation to an authoritative source
+  - MUST avoid prescriptive advice based on outdated info; resolve latest stable recommendations via Real-time Tech Validation
 - `system-patterns.md` - Identify existing architectural patterns and design decisions
   - Include: Design patterns observed, architectural style, data flow
 - `product-context.md` - Define product requirements, target users, and core functionality
@@ -113,6 +127,12 @@ After creating each file:
 - Check file is not empty (minimum 10 lines of content)
 - Ensure frontmatter is present and valid
 - Validate markdown formatting is correct
+
+Additional validation for `tech-context.md`:
+
+- Ensure every normative claim ("use X", "latest is Y", "deprecated Z") includes a citation link and a "Verified" date from the current run.
+- Ensure all cited sources meet the 6-month recency rule or include the explicit "No recent official update found" disclaimer.
+- Ensure AI model recommendations reference the current provider guidance at generation time, not hardcoded historical names.
 
 ### 5. Error Handling
 
