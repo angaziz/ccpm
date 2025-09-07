@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash, Read, Write, LS
+allowed-tools: Bash, Read, Write, LS, WebSearch, Ref, BraveSearch
 ---
 
 # Issue Analyze
@@ -7,6 +7,7 @@ allowed-tools: Bash, Read, Write, LS
 Analyze an issue to identify parallel work streams for maximum efficiency.
 
 ## Usage
+
 ```
 /pm:issue-analyze <issue_number>
 ```
@@ -14,6 +15,7 @@ Analyze an issue to identify parallel work streams for maximum efficiency.
 ## Quick Check
 
 1. **Find local task file:**
+
    - First check if `.claude/epics/*/$ARGUMENTS.md` exists (new naming convention)
    - If not found, search for file containing `github:.*issues/$ARGUMENTS` in frontmatter (old naming)
    - If not found: "❌ No local task for issue #$ARGUMENTS. Run: /pm:import first"
@@ -28,11 +30,13 @@ Analyze an issue to identify parallel work streams for maximum efficiency.
 ### 1. Read Issue Context
 
 Get issue details from GitHub:
+
 ```bash
 gh issue view $ARGUMENTS --json title,body,labels
 ```
 
 Read local task file to understand:
+
 - Technical requirements
 - Acceptance criteria
 - Dependencies
@@ -43,6 +47,7 @@ Read local task file to understand:
 Analyze the issue to identify independent work that can run in parallel:
 
 **Common Patterns:**
+
 - **Database Layer**: Schema, migrations, models
 - **Service Layer**: Business logic, data access
 - **API Layer**: Endpoints, validation, middleware
@@ -51,10 +56,22 @@ Analyze the issue to identify independent work that can run in parallel:
 - **Documentation**: API docs, README updates
 
 **Key Questions:**
+
 - What files will be created/modified?
 - Which changes can happen independently?
 - What are the dependencies between changes?
 - Where might conflicts occur?
+
+### 2.1 Real-time Practice Validation
+
+Before recommending tools, versions, or patterns in this analysis:
+
+- Use live docs search (WebSearch, Ref, BraveSearch) to confirm current stable versions and guidance for any technologies you suggest (frameworks, runtime, CI/CD, AI models, testing).
+- Prefer official docs, release notes, and provider changelogs. Avoid outdated blog posts.
+- Enforce a 6-month recency rule for sources. If not available, include a note: "No recent official update found; using best available reference as of {date}."
+- For AI model providers, resolve the current recommended general-purpose model at generation time. Do not hardcode historical names.
+- Cite each normative recommendation with a markdown link and add "Verified: {YYYY-MM-DD}".
+- If offline, clearly mark recommendations as "Unverified (offline)" and avoid prescriptive upgrade advice.
 
 ### 3. Create Analysis File
 
@@ -65,62 +82,74 @@ Create `.claude/epics/{epic_name}/$ARGUMENTS-analysis.md`:
 ```markdown
 ---
 issue: $ARGUMENTS
-title: {issue_title}
-analyzed: {current_datetime}
-estimated_hours: {total_hours}
-parallelization_factor: {1.0-5.0}
+title: { issue_title }
+analyzed: { current_datetime }
+estimated_hours: { total_hours }
+parallelization_factor: { 1.0-5.0 }
 ---
 
 # Parallel Work Analysis: Issue #$ARGUMENTS
 
 ## Overview
+
 {Brief description of what needs to be done}
 
 ## Parallel Streams
 
 ### Stream A: {Stream Name}
+
 **Scope**: {What this stream handles}
 **Files**:
+
 - {file_pattern_1}
 - {file_pattern_2}
-**Agent Type**: {backend|frontend|fullstack|database}-specialist
-**Can Start**: immediately
-**Estimated Hours**: {hours}
-**Dependencies**: none
+  **Agent Type**: {backend|frontend|fullstack|database}-specialist
+  **Can Start**: immediately
+  **Estimated Hours**: {hours}
+  **Dependencies**: none
 
 ### Stream B: {Stream Name}
+
 **Scope**: {What this stream handles}
 **Files**:
+
 - {file_pattern_1}
 - {file_pattern_2}
-**Agent Type**: {agent_type}
-**Can Start**: immediately
-**Estimated Hours**: {hours}
-**Dependencies**: none
+  **Agent Type**: {agent_type}
+  **Can Start**: immediately
+  **Estimated Hours**: {hours}
+  **Dependencies**: none
 
 ### Stream C: {Stream Name}
+
 **Scope**: {What this stream handles}
 **Files**:
+
 - {file_pattern_1}
-**Agent Type**: {agent_type}
-**Can Start**: after Stream A completes
-**Estimated Hours**: {hours}
-**Dependencies**: Stream A
+  **Agent Type**: {agent_type}
+  **Can Start**: after Stream A completes
+  **Estimated Hours**: {hours}
+  **Dependencies**: Stream A
 
 ## Coordination Points
 
 ### Shared Files
+
 {List any files multiple streams need to modify}:
+
 - `src/types/index.ts` - Streams A & B (coordinate type updates)
 - `package.json` - Stream B (add dependencies)
 
 ### Sequential Requirements
+
 {List what must happen in order}:
+
 1. Database schema before API endpoints
 2. API types before UI components
 3. Core logic before tests
 
 ## Conflict Risk Assessment
+
 - **Low Risk**: Streams work on different directories
 - **Medium Risk**: Some shared type files, manageable with coordination
 - **High Risk**: Multiple streams modifying same core files
@@ -136,20 +165,24 @@ parallelization_factor: {1.0-5.0}
 ## Expected Timeline
 
 With parallel execution:
+
 - Wall time: {max_stream_hours} hours
 - Total work: {sum_all_hours} hours
 - Efficiency gain: {percentage}%
 
 Without parallel execution:
+
 - Wall time: {sum_all_hours} hours
 
 ## Notes
+
 {Any special considerations, warnings, or recommendations}
 ```
 
 ### 4. Validate Analysis
 
 Ensure:
+
 - All major work is covered by streams
 - File patterns don't unnecessarily overlap
 - Dependencies are logical
@@ -165,7 +198,7 @@ Identified {count} parallel work streams:
   Stream A: {name} ({hours}h)
   Stream B: {name} ({hours}h)
   Stream C: {name} ({hours}h)
-  
+
 Parallelization potential: {factor}x speedup
   Sequential time: {total}h
   Parallel time: {reduced}h

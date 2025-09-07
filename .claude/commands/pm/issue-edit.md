@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash, Read, Write, LS
+allowed-tools: Bash, Read, Write, LS, WebSearch, Ref, BraveSearch
 ---
 
 # Issue Edit
@@ -7,6 +7,7 @@ allowed-tools: Bash, Read, Write, LS
 Edit issue details locally and on GitHub.
 
 ## Usage
+
 ```
 /pm:issue-edit <issue_number>
 ```
@@ -26,17 +27,29 @@ gh issue view $ARGUMENTS --json title,body,labels
 ### 2. Interactive Edit
 
 Ask user what to edit:
+
 - Title
 - Description/Body
 - Labels
 - Acceptance criteria (local only)
 - Priority/Size (local only)
 
+### Real-time Validation for Technical Guidance
+
+If you add or modify technical direction in the issue body (e.g., framework versions, model names, CI choices):
+
+- Validate via live docs search (WebSearch, Ref, BraveSearch) using authoritative sources only.
+- Apply a 6-month recency rule for sources; otherwise add: "No recent official update found; using best available reference as of {date}."
+- Resolve AI model recommendations at generation time; avoid hardcoded historical names.
+- Include citations with markdown links and a "Verified: {YYYY-MM-DD}" note in the updated body.
+- If offline, mark such guidance as "Unverified (offline)" and avoid prescriptive upgrade advice.
+
 ### 3. Update Local File
 
 Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
 
 Update task file with changes:
+
 - Update frontmatter `name` if title changed
 - Update body content if description changed
 - Update `updated` field with current datetime
@@ -44,16 +57,19 @@ Update task file with changes:
 ### 4. Update GitHub
 
 If title changed:
+
 ```bash
 gh issue edit $ARGUMENTS --title "{new_title}"
 ```
 
 If body changed:
+
 ```bash
 gh issue edit $ARGUMENTS --body-file {updated_task_file}
 ```
 
 If labels changed:
+
 ```bash
 gh issue edit $ARGUMENTS --add-label "{new_labels}"
 gh issue edit $ARGUMENTS --remove-label "{removed_labels}"
@@ -65,7 +81,7 @@ gh issue edit $ARGUMENTS --remove-label "{removed_labels}"
 ✅ Updated issue #$ARGUMENTS
   Changes:
     {list_of_changes_made}
-  
+
 Synced to GitHub: ✅
 ```
 
